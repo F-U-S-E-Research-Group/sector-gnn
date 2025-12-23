@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch_geometric.loader import DataLoader
-from torch.utils.data import random_split
+from splits import chronological_split
 
 
 from config import Config
@@ -54,9 +54,8 @@ if __name__ == "__main__":
     prices, volumes = download_sector_data(cfg)
     dataset = SectorGraphDataset(prices, volumes, cfg)
 
-    train_size = int(len(dataset) * cfg.train_fraction)
-    val_size = len(dataset) - train_size
-    train_ds, val_ds = random_split(dataset, [train_size, val_size])
+    train_ds, val_ds = chronological_split(dataset, cfg.train_fraction)
+
 
     train_loader = DataLoader(train_ds, batch_size=cfg.batch_size, shuffle=True)
     val_loader = DataLoader(val_ds, batch_size=cfg.batch_size)
